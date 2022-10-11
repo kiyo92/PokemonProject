@@ -10,15 +10,15 @@ import Alamofire
 
 class NetworkAdapter {
 
-    let route: RouteProtocol
+    let route: RouteProtocol?
 
-    init(route: RouteProtocol) {
+    init(route: RouteProtocol? = nil) {
         self.route = route
     }
 
     func request<T:Decodable>(with type: T.Type, completion: @escaping(T, Error?) -> Void) {
 
-        let requestConfigs = self.route.getRoute()
+        guard let requestConfigs = self.route?.getRoute() else { return }
 
         AF.request(requestConfigs.path.getPath(),
                    method: requestConfigs.method,
@@ -33,6 +33,21 @@ class NetworkAdapter {
             } catch {
 
                 print("error")
+            }
+        }
+    }
+
+    func request(with imageUrl: String, completion: @escaping(Data, Error?) -> Void) {
+
+        AF.request(imageUrl, method: .get).response{ response in
+
+           switch response.result {
+            case .success(let responseData):
+               guard let data = responseData else { return }
+               completion(data, nil)
+
+            case .failure(let error):
+               completion(Data(), error)
             }
         }
     }

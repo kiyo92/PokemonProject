@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class AuthCoordinator: Coordinator {
+class AuthCoordinator: NSObject, Coordinator, UINavigationControllerDelegate {
 
     var children = [Coordinator]()
     var navigationController: UINavigationController
@@ -21,6 +21,7 @@ class AuthCoordinator: Coordinator {
     func start() {
 
         let vc = LoginViewController()
+        self.navigationController.delegate = self
         vc.coordinator = self
         self.navigationController.pushViewController(vc, animated: false)
     }
@@ -38,5 +39,34 @@ class AuthCoordinator: Coordinator {
         child.parent = self
         children.append(child)
         child.start()
+    }
+
+    func dismissChildCoordinator (with child: Coordinator?) {
+
+        for (index, coordinator) in children.enumerated() {
+
+            if child === coordinator {
+
+                children.remove(at: index)
+                break
+            }
+        }
+    }
+
+    func navigationController(_ navigationController: UINavigationController,
+                              didShow viewController: UIViewController,
+                              animated: Bool) {
+
+        guard let originVC = navigationController.transitionCoordinator?.viewController(forKey: .from) else { return }
+
+        if navigationController.viewControllers.contains(originVC) {
+
+            return
+        }
+
+        if let mainViewController = originVC as? MainViewController {
+
+            self.dismissChildCoordinator(with: mainViewController.coordinator)
+        }
     }
 }

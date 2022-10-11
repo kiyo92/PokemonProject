@@ -12,7 +12,7 @@ class PokemonPath: PathProtocol {
     enum Path {
 
         case pokemonList(offset: Int)
-        case pokemonDetail(id: Int)
+        case pokemonDetail(name: String)
     }
 
     let path: Path
@@ -26,9 +26,9 @@ class PokemonPath: PathProtocol {
 
         switch path {
 
-        case .pokemonDetail(let id):
+        case .pokemonDetail(let name):
 
-            return "https://pokeapi.co/api/v2/pokemon/\(id)/"
+            return "https://pokeapi.co/api/v2/pokemon/\(name)/"
 
         case .pokemonList(let offset):
 

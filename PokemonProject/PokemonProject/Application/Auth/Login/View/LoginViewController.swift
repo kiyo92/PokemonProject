@@ -17,8 +17,24 @@ class LoginViewController: UIViewController, StoryboardProtocol {
     weak var delegate: LoginViewControllerDelegate?
     weak var coordinator: AuthCoordinator?
 
+    var text: String? {
+
+        didSet {
+            aLabel.text = text
+        }
+    }
+    
+    lazy var aLabel: UILabel = {
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.addSubview(aLabel)
 
         let route = RouteModel(path: PokemonPath(path: .pokemonList(offset: 0)))
         var adapter = NetworkAdapter(route: Router(route: route))
@@ -39,7 +55,7 @@ class LoginViewController: UIViewController, StoryboardProtocol {
         }
 
 
-        let routeDetail = RouteModel(path: PokemonPath(path: .pokemonDetail(id: 1)))
+        let routeDetail = RouteModel(path: PokemonPath(path: .pokemonDetail(name: "togepi")))
         adapter = NetworkAdapter(route: Router(route: routeDetail))
 
         adapter.request(with: Pokemon.self) { [weak self] result, error in
@@ -54,7 +70,7 @@ class LoginViewController: UIViewController, StoryboardProtocol {
                 }
             }
 
-            self?.coordinator?.register()
+            self?.coordinator?.main()
         }
     }
 

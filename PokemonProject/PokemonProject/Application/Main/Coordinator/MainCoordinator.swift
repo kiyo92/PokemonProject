@@ -26,8 +26,15 @@ class MainCoordinator: Coordinator {
         self.navigationController.pushViewController(vc, animated: false)
     }
 
+    func pokemonDetail(pokemon: Pokemon) {
+
+        let vc = PokemonDetailViewController(pokemon: pokemon)
+        self.navigationController.pushViewController(vc, animated: false)
+    }
+
     func dismissCoordinator() {
 
-
+        let parent = self.parent as? AuthCoordinator
+        parent?.dismissChildCoordinator(with: self)
     }
 }
