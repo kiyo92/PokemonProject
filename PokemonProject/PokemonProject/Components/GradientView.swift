@@ -9,14 +9,15 @@ import UIKit
 
 class GradientView: UIView {
 
-    private let topHex: String
-    private let bottomHex: String
+    private let topColor: UIColor
+    private let bottomColor: UIColor
+    private let radius: Int
 
-    init(topHex: String, bottomHex: String) {
+    init(topColor: UIColor, bottomColor: UIColor, radius: Int = 0) {
 
-        self.topHex = topHex
-        self.bottomHex = bottomHex
-
+        self.topColor = topColor
+        self.bottomColor = bottomColor
+        self.radius = radius
         super.init(frame: CGRect.zero)
     }
 
@@ -27,20 +28,26 @@ class GradientView: UIView {
 
     override func layoutSubviews() {
 
-        self.createGradient(topHex: self.topHex, bottomHex: self.bottomHex)
+        self.createGradient(topColor: self.topColor, bottomColor: self.bottomColor, radius: self.radius)
+        roundeViewCorners()
 
     }
 
-    func createGradient(topHex: String, bottomHex: String) {
+    func roundeViewCorners() {
 
-        let colorTop =  UIColor(hex: topHex).cgColor
-        let colorBottom = UIColor(hex: bottomHex).cgColor
+        self.layer.cornerRadius = 10
+    }
+
+    private func createGradient(topColor: UIColor, bottomColor: UIColor, radius: Int) {
+
+        let colorTop =  topColor.cgColor
+        let colorBottom = bottomColor.cgColor
 
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [colorTop, colorBottom]
         gradientLayer.locations = [0.0, 1.0]
         gradientLayer.frame = self.bounds
-
+        gradientLayer.cornerRadius = CGFloat(radius)
         self.layer.insertSublayer(gradientLayer, at:0)
     }
 

@@ -13,6 +13,7 @@ class PokemonPath: PathProtocol {
 
         case pokemonList(offset: Int)
         case pokemonDetail(name: String)
+        case pokemonSpecies(id: Int)
     }
 
     let path: Path
@@ -33,6 +34,10 @@ class PokemonPath: PathProtocol {
         case .pokemonList(let offset):
 
             return "https://pokeapi.co/api/v2/pokemon/?offset=\(offset)"
+
+        case .pokemonSpecies(let id):
+
+            return "https://pokeapi.co/api/v2/pokemon-species/\(id)/"
         }
     }
 }

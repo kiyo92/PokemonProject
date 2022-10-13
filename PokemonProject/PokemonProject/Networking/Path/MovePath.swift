@@ -11,7 +11,7 @@ class MovePath: PathProtocol {
 
     enum Path {
 
-        case moveDetail(id: Int)
+        case moveDetail(name: String)
     }
 
     let path: Path
@@ -25,9 +25,9 @@ class MovePath: PathProtocol {
 
         switch path {
             
-        case .moveDetail(let id):
+        case .moveDetail(let name):
             
-            return "https://pokeapi.co/api/v2/pokemon/\(id)/"
+            return "https://pokeapi.co/api/v2/move/\(name)/"
         }
     }
 }

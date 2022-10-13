@@ -28,13 +28,21 @@ class MainCoordinator: Coordinator {
 
     func pokemonDetail(pokemon: Pokemon) {
 
-        let vc = PokemonDetailViewController(pokemon: pokemon)
-        self.navigationController.pushViewController(vc, animated: false)
+        let child = PokemonCoordinator(navigationController: self.navigationController)
+        child.parent = self
+        children.append(child)
+        child.start(with: pokemon)
     }
 
-    func dismissCoordinator() {
+    func dismissChildCoordinator (with child: Coordinator?) {
 
-        let parent = self.parent as? AuthCoordinator
-        parent?.dismissChildCoordinator(with: self)
+        for (index, coordinator) in children.enumerated() {
+
+            if child === coordinator {
+
+                children.remove(at: index)
+                break
+            }
+        }
     }
 }

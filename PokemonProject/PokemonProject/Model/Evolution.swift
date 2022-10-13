@@ -16,10 +16,15 @@ struct Chain: Codable {
 
     let evolvesTo: [Chain]?
     let species: Species?
+
+    enum CodingKeys: String, CodingKey {
+
+        case evolvesTo = "evolves_to"
+        case species
+    }
 }
 
 struct Species: Codable {
 
     let name: String?
-    let url: String?
 }

@@ -52,7 +52,7 @@ extension UIColor {
             return UIColor(hex: "#78C84F")
         case "poison":
             return UIColor(hex: "#9F409F")
-        case "eletric":
+        case "electric":
             return UIColor(hex: "#F8CF30")
         case "ground":
             return UIColor(hex: "#E0C068")
@@ -78,4 +78,24 @@ extension UIColor {
             return UIColor(hex: "#68A090")
         }
     }
+
+    func lighter(by percentage: CGFloat = 30.0) -> UIColor? {
+            return self.adjust(by: abs(percentage) )
+        }
+
+        func darker(by percentage: CGFloat = 30.0) -> UIColor? {
+            return self.adjust(by: -1 * abs(percentage) )
+        }
+
+        func adjust(by percentage: CGFloat = 30.0) -> UIColor? {
+            var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+            if self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+                return UIColor(red: min(red + percentage/100, 1.0),
+                               green: min(green + percentage/100, 1.0),
+                               blue: min(blue + percentage/100, 1.0),
+                               alpha: alpha)
+            } else {
+                return nil
+            }
+        }
 }

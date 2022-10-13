@@ -7,15 +7,16 @@
 
 import UIKit
 
-class MainViewController: UIViewController, UISearchResultsUpdating, UINavigationBarDelegate {
+final class MainViewController: UIViewController,
+                                UISearchResultsUpdating,
+                                UINavigationBarDelegate {
 
     weak var coordinator: MainCoordinator?
     var viewModel: MainViewModel = MainViewModel()
-
     private var pokemonDetailList = [Pokemon]()
     private var filteredPokemonList = [Pokemon]()
 
-    var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
 
         let tableView = UITableView()
 
@@ -26,10 +27,10 @@ class MainViewController: UIViewController, UISearchResultsUpdating, UINavigatio
         return tableView
     }()
 
-    var profileView: MainPokemonProfileView = MainPokemonProfileView()
-    var profileViewHeightConstraint: NSLayoutConstraint?
+    private var profileView: MainPokemonProfileView = MainPokemonProfileView()
+    private var profileViewHeightConstraint: NSLayoutConstraint?
 
-    let searchController: UISearchController = {
+    private let searchController: UISearchController = {
 
         let search = UISearchController(searchResultsController: nil)
 
@@ -42,6 +43,7 @@ class MainViewController: UIViewController, UISearchResultsUpdating, UINavigatio
     }()
 
     override func viewDidLoad() {
+
         super.viewDidLoad()
 
         view.backgroundColor = .white
@@ -52,21 +54,26 @@ class MainViewController: UIViewController, UISearchResultsUpdating, UINavigatio
         self.tableView.dataSource = self
         self.profileView.delegate = self
 
-        self.searchController.searchResultsUpdater = self
+        self.createSubviews()
+        self.createConstraints()
+        self.getPokemonList()
+    }
 
-        navigationItem.searchController = self.searchController
+    override func viewWillAppear(_ animated: Bool) {
 
-        let navigationBarAppearace = UINavigationBar.appearance()
-
-        navigationBarAppearace.tintColor = UIColor.orange
-        navigationBarAppearace.barTintColor = UIColor.orange
-
-        title = "Pokedex"
-
+        super.viewWillAppear(animated)
         self.setupNavigationBar()
+    }
+
+    private func createSubviews() {
+
         view.addSubview(profileView)
         view.addSubview(tableView)
         self.profileView.translatesAutoresizingMaskIntoConstraints = false
+        self.profileView.isHidden = true
+    }
+
+    private func createConstraints() {
 
         self.profileViewHeightConstraint = profileView.heightAnchor.constraint(equalToConstant: 0)
         self.profileViewHeightConstraint?.isActive = true
@@ -82,26 +89,28 @@ class MainViewController: UIViewController, UISearchResultsUpdating, UINavigatio
             self.tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             self.tableView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
-
-        self.getPokemonList()
     }
+    
+    private func setupNavigationBar() {
 
-    func setupNavigationBar() {
+        title = "Pokedex"
+        self.searchController.searchResultsUpdater = self
+        navigationItem.searchController = self.searchController
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         appearance.backgroundColor = UIColor(hex: "#6A81CC")
 
-        self.navigationController?.navigationBar.standardAppearance = appearance
-        self.navigationController?.navigationBar.tintColor = .white
-        self.navigationController?.navigationBar.scrollEdgeAppearance = self.navigationController?.navigationBar.standardAppearance
+        let navigationBar = self.navigationController?.navigationBar
+        navigationBar?.standardAppearance = appearance
+        navigationBar?.tintColor = .white
+        navigationBar?.scrollEdgeAppearance = navigationBar?.standardAppearance
     }
 
     func updateSearchResults(for searchController: UISearchController) {
 
         guard let text = searchController.searchBar.text else { return }
-        print(text)
 
         self.filteredPokemonList = text.isEmpty ? self.pokemonDetailList : self.pokemonDetailList.filter({(pokemon: Pokemon) -> Bool in
 
@@ -123,22 +132,24 @@ class MainViewController: UIViewController, UISearchResultsUpdating, UINavigatio
 
         let group: DispatchGroup = DispatchGroup()
 
-        pokemonList.forEach { pokemon in
+        pokemonList.forEach { [weak self] pokemon in
 
             group.enter()
 
-            self.viewModel.getPokemonProfile(with: pokemon.name ?? "") { pokemonDetail, error in
+            self?.viewModel.getPokemonProfile(with: pokemon.name ?? "") { pokemonDetail, error in
 
-                self.pokemonDetailList.append(pokemonDetail)
-                self.filteredPokemonList.append(pokemonDetail)
+                self?.pokemonDetailList.append(pokemonDetail)
+                self?.filteredPokemonList.append(pokemonDetail)
 
                 group.leave()
             }
 
             group.notify(queue: .main) {
 
-                self.filteredPokemonList = self.filteredPokemonList.sorted(by: {$0.id ?? 0 < $1.id ?? 0})
-                self.tableView.reloadData()
+                self?.pokemonDetailList = self?.pokemonDetailList
+                    .sorted(by: {$0.id ?? 0 < $1.id ?? 0}) ?? []
+                self?.filteredPokemonList = self?.pokemonDetailList ?? []
+                self?.tableView.reloadData()
             }
         }
     }
@@ -215,7 +226,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
 
         if let indexPathForSelectedRow = tableView.indexPathForSelectedRow,
-            indexPathForSelectedRow == indexPath {
+           indexPathForSelectedRow == indexPath {
             self.updateProfileVisibility(isHidden: true)
             tableView.deselectRow(at: indexPath, animated: false)
             return nil

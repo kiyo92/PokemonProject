@@ -57,4 +57,28 @@ struct PokemonMoves: Codable {
     let move: Move?
 }
 
+struct PokemonSpecies: Codable {
 
+    let evolutionChain: EvolutionChain?
+    
+    enum CodingKeys: String, CodingKey {
+
+        case evolutionChain = "evolution_chain"
+    }
+}
+
+struct PokemonCharacteristic: Codable {
+
+    let descriptions: [PokemonDescription]?
+
+}
+
+struct PokemonDescription: Codable {
+
+    let description: String?
+}
+
+struct EvolutionChain: Codable {
+
+    let url: String?
+}

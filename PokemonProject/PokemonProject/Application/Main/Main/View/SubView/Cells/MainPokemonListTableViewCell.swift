@@ -11,7 +11,8 @@ class MainPokemonListTableViewCell: UITableViewCell {
 
     private lazy var container: GradientView = {
 
-        let view = GradientView(topHex: "#FAECBE", bottomHex: "#FEE9B1")
+        let view = GradientView(topColor: UIColor(hex: "#FAECBE"),
+                                bottomColor: UIColor(hex: "#FEE9B1"))
         view.translatesAutoresizingMaskIntoConstraints = false
 
         return view
@@ -30,6 +31,8 @@ class MainPokemonListTableViewCell: UITableViewCell {
     private lazy var pokemonNumber: UILabel = {
 
         let label = UILabel()
+        label.textColor = .darkGray
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -48,6 +51,8 @@ class MainPokemonListTableViewCell: UITableViewCell {
     private lazy var nameLabel: UILabel = {
 
         let label = UILabel()
+        label.textColor = .darkGray
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         label.translatesAutoresizingMaskIntoConstraints = false
 
         return label
@@ -79,7 +84,7 @@ class MainPokemonListTableViewCell: UITableViewCell {
 
     func configureCellData(name: String, pokemonNumber: Int, image: UIImage? = UIImage()) {
 
-        self.nameLabel.text = name
+        self.nameLabel.text = name.capitalized
         self.pokemonImage.image = image
         self.pokemonNumber.text = "No. \(pokemonNumber)"
     }

@@ -12,13 +12,14 @@ protocol MainPokemonProfileViewDelegate: AnyObject {
     func showPokemonDetails(pokemon: Pokemon)
 }
 
-class MainPokemonProfileView: UIView {
+final class MainPokemonProfileView: UIView {
 
     weak var delegate: MainPokemonProfileViewDelegate?
 
     private lazy var container: GradientView = {
 
-        let view = GradientView(topHex: "#C5E0F0", bottomHex: "#8C9EE9")
+        let view = GradientView(topColor: UIColor(hex: "#C5E0F0"),
+                                bottomColor: UIColor(hex: "#8C9EE9"))
 
         view.translatesAutoresizingMaskIntoConstraints = false
 
@@ -96,6 +97,17 @@ class MainPokemonProfileView: UIView {
                                     bottomLeft: 5,
                                     bottomRight: 5)
         self.detailsButton.roundCorners(topLeft: 10)
+        self.createBorders()
+    }
+
+    @objc
+    private func showPokemonDetails() {
+
+        guard let pokemon = self.pokemon else { return }
+        self.delegate?.showPokemonDetails(pokemon: pokemon)
+    }
+
+    private func createBorders() {
 
         let outerBorder = CALayer()
         outerBorder.borderWidth = 7
@@ -113,14 +125,6 @@ class MainPokemonProfileView: UIView {
 
         container.layer.addSublayer(innerBorder)
         container.layer.addSublayer(outerBorder)
-
-    }
-
-    @objc
-    private func showPokemonDetails() {
-
-        guard let pokemon = self.pokemon else { return }
-        self.delegate?.showPokemonDetails(pokemon: pokemon)
     }
 
     func configureViewData(pokemon: Pokemon) {
@@ -133,7 +137,7 @@ class MainPokemonProfileView: UIView {
         self.setupPokemonTypes(pokemonTypes: pokemon.types ?? [])
     }
 
-    func createSubviews() {
+    private func createSubviews() {
 
         addSubview(self.container)
         self.container.addSubview(self.profileImageView)
@@ -142,7 +146,7 @@ class MainPokemonProfileView: UIView {
         addSubview(self.detailsButton)
     }
 
-    func createConstraints() {
+    private func createConstraints() {
 
         NSLayoutConstraint.activate([
 
@@ -175,7 +179,7 @@ class MainPokemonProfileView: UIView {
         ])
     }
 
-    func setupPokemonTypes(pokemonTypes: [PokemonTypes]) {
+    private func setupPokemonTypes(pokemonTypes: [PokemonTypes]) {
 
         for item in self.typesStackView.arrangedSubviews {
 
