@@ -16,6 +16,16 @@ final class MainViewController: UIViewController,
     private var pokemonDetailList = [Pokemon]()
     private var filteredPokemonList = [Pokemon]()
 
+    private lazy var loading: UIActivityIndicatorView = {
+
+        let loading = UIActivityIndicatorView(style: .large)
+        loading.hidesWhenStopped = true
+        loading.color = .darkGray
+        loading.translatesAutoresizingMaskIntoConstraints = false
+
+        return loading
+    }()
+
     private lazy var tableView: UITableView = {
 
         let tableView = UITableView()
@@ -69,6 +79,7 @@ final class MainViewController: UIViewController,
 
         view.addSubview(profileView)
         view.addSubview(tableView)
+        view.addSubview(loading)
         self.profileView.translatesAutoresizingMaskIntoConstraints = false
         self.profileView.isHidden = true
     }
@@ -79,6 +90,9 @@ final class MainViewController: UIViewController,
         self.profileViewHeightConstraint?.isActive = true
 
         NSLayoutConstraint.activate([
+
+            self.loading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            self.loading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
             self.profileView.topAnchor.constraint(equalTo: view.topAnchor),
             self.profileView.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -122,6 +136,7 @@ final class MainViewController: UIViewController,
 
     private func getPokemonList () {
 
+        self.loading.startAnimating()
         self.viewModel.getPokemonList() { pokemonList, error in
 
             self.getPokemonProfile(pokemonList: pokemonList)
@@ -150,6 +165,7 @@ final class MainViewController: UIViewController,
                     .sorted(by: {$0.id ?? 0 < $1.id ?? 0}) ?? []
                 self?.filteredPokemonList = self?.pokemonDetailList ?? []
                 self?.tableView.reloadData()
+                self?.loading.stopAnimating()
             }
         }
     }

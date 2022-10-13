@@ -17,6 +17,16 @@ class PokemonDetailViewController: UIViewController {
 
     var containerView = UIView()
 
+    private lazy var loading: UIActivityIndicatorView = {
+
+        let loading = UIActivityIndicatorView(style: .large)
+        loading.hidesWhenStopped = true
+        loading.color = .darkGray
+        loading.translatesAutoresizingMaskIntoConstraints = false
+
+        return loading
+    }()
+
     let collectionView: UICollectionView = {
 
         let layout = UICollectionViewFlowLayout()
@@ -141,6 +151,7 @@ class PokemonDetailViewController: UIViewController {
     func createSubviews() {
         
         view.addSubview(self.scrollView)
+        view.addSubview(loading)
         self.scrollView.translatesAutoresizingMaskIntoConstraints = false
         self.scrollView.addSubview(self.containerView)
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -156,6 +167,9 @@ class PokemonDetailViewController: UIViewController {
 
         NSLayoutConstraint.activate([
 
+            self.loading.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            self.loading.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
             self.scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             self.scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             self.scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -218,6 +232,8 @@ class PokemonDetailViewController: UIViewController {
 
     func getEvolutionData() {
 
+        self.loading.startAnimating()
+
         self.viewModel.getEvolutionData() { result, error in
 
             result.forEach { pokemon in
@@ -250,6 +266,8 @@ class PokemonDetailViewController: UIViewController {
 
                 self.moveStackView.addArrangedSubview(view)
             }
+
+            self.loading.stopAnimating()
         }
     }
 }
